@@ -1,0 +1,88 @@
+name: 'sample'
+
+services:
+  nginx:
+    build:
+      context: .
+      dockerfile: ./build/web/Dockerfile
+    image: sample-nginx
+    container_name: sample-nginx
+    volumes:
+      - type: bind
+        source: ./front
+        target: /app/front
+      - type: bind
+        source: ./back
+        target: /app/back
+    depends_on:
+      - front
+      - back
+    ports:
+      - 8000:80
+    networks:
+      - sample-network
+  front:
+    build:
+      args:
+        USER_ID: ${USER_ID:-0}
+        GROUP_ID: ${GROUP_ID:-0}
+        USER_NAME: ${USER_NAME:-0}
+        GROUP_NAME: ${GROUP_NAME:-0}
+      context: .
+      dockerfile: ./build/front/Dockerfile
+    image: sample-front
+    container_name: sample-front
+    volumes:
+      - type: bind
+        source: ./front
+        target: /app
+    depends_on:
+      - bdd
+    networks:
+      - sample-network
+  back:
+    build:
+      args:
+        USER_ID: ${USER_ID:-0}
+        GROUP_ID: ${GROUP_ID:-0}
+        USER_NAME: ${USER_NAME:-0}
+        GROUP_NAME: ${GROUP_NAME:-0}
+      context: .
+      dockerfile: ./build/back/Dockerfile
+    image: sample-back
+    container_name: sample-back
+    volumes:
+      - type: bind
+        source: ./back
+        target: /app/back
+    depends_on:
+      - bdd
+    networks:
+      - sample-network
+  bdd:
+    build:
+      context: .
+      dockerfile: ./build/bdd/Dockerfile
+    image: sample-bdd
+    container_name: sample-bdd
+    ports:
+      - 3306:3306
+    volumes:
+      - type: volume
+        source: bdd-volume
+        target: /var/lib/mysql
+    environment:
+      MYSQL_DATABASE: samplebdd
+      MYSQL_ROOT_PASSWORD: dzadazdza
+      MYSQL_USER: sinyx
+      MYSQL_PASSWORD: sinyx
+    networks:
+      - sample-network
+
+networks:
+  sample-network:
+    driver: bridge
+
+volumes:
+  bdd-volume:
+    driver: local
