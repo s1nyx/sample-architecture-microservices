@@ -12,22 +12,17 @@ services:
         source: ./front
         target: /app/front
       - type: bind
-        source: ./back
-        target: /app/back
+        source: ./api-gateway
+        target: /app/api-gateway
     depends_on:
       - front
-      - back
+      - api-gateway
     ports:
       - 8000:80
     networks:
       - sample-network
   front:
     build:
-      args:
-        USER_ID: ${USER_ID:-0}
-        GROUP_ID: ${GROUP_ID:-0}
-        USER_NAME: ${USER_NAME:-0}
-        GROUP_NAME: ${GROUP_NAME:-0}
       context: .
       dockerfile: ./build/front/Dockerfile
     image: sample-front
@@ -42,21 +37,28 @@ services:
       - sample-network
   back:
     build:
-      args:
-        USER_ID: ${USER_ID:-0}
-        GROUP_ID: ${GROUP_ID:-0}
-        USER_NAME: ${USER_NAME:-0}
-        GROUP_NAME: ${GROUP_NAME:-0}
       context: .
       dockerfile: ./build/back/Dockerfile
     image: sample-back
     container_name: sample-back
     volumes:
-      - type: bind
-        source: ./back
-        target: /app/back
+      - ./back:/app
     depends_on:
       - bdd
+    networks:
+      - sample-network
+  api-gateway:
+    build:
+      context: .
+      dockerfile: ./build/api-gateway/Dockerfile
+      target: development
+    image: sample-api-gateway
+    container_name: sample-api-gateway
+    volumes:
+      - ./api-gateway:/app
+    depends_on:
+      - bdd
+      - back
     networks:
       - sample-network
   bdd:
@@ -86,3 +88,4 @@ networks:
 volumes:
   bdd-volume:
     driver: local
+  api-gateway:

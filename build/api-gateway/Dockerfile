@@ -6,14 +6,16 @@ USER node
 
 WORKDIR /app
 
-COPY --chown=node:node ./back/package*.json /tmp/app/
+COPY --chown=node:node ./api-gateway/package*.json /tmp/app/
 RUN cd /tmp/app && yarn install --frozen-lockfile
 
-COPY --chown=node:node ./back /app
+COPY --chown=node:node ./api-gateway /app
 RUN cp -a /tmp/app/node_modules /app
 
 RUN chown -R node:node /app
 
-EXPOSE 8888
+EXPOSE 4000
+
+RUN cp .env.example .env
 
 CMD ["npm", "run", "start:dev"]
