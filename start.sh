@@ -23,3 +23,7 @@ for dir in $(find $current_dir -maxdepth 1 -type d); do
 done
 
 echo "Installation des dépendances terminée"
+
+# Lancement de l'application
+echo "Lancement de l'application"
+docker compose up --build -d
