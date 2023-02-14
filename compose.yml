@@ -35,14 +35,14 @@ services:
       - bdd
     networks:
       - sample-network
-  back:
+  service-auth:
     build:
       context: .
-      dockerfile: ./build/back/Dockerfile
-    image: sample-back
-    container_name: sample-back
+      dockerfile: ./build/service-auth/Dockerfile
+    image: sample-service-auth
+    container_name: sample-service-auth
     volumes:
-      - ./back:/app
+      - ./service-auth:/app
     depends_on:
       - bdd
     networks:
@@ -58,7 +58,7 @@ services:
       - ./api-gateway:/app
     depends_on:
       - bdd
-      - back
+      - service-auth
     networks:
       - sample-network
   bdd:

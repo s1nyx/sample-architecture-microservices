@@ -10,7 +10,7 @@ import { AppService } from "./app.service";
         name: "SERVICE_A",
         transport: Transport.TCP,
         options: {
-          host: "sample-back",
+          host: "sample-service-auth",
           port: 8888
         }
       },
